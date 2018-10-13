@@ -53,7 +53,7 @@ def main():
     # unet_sym = build_unet(batch_size, img_width, img_height, False)
     # unet = mx.mod.Module(symbol=unet_sym, context=ctx, label_names=None)
 
-    sym, arg_params, aux_params = mx.model.load_checkpoint('./models/unet_person_segmentation', 100)
+    sym, arg_params, aux_params = mx.model.load_checkpoint('unet_person_segmentation', 0)
     unet = mx.mod.Module(symbol=sym, context=ctx, label_names=None)
 
     unet.bind(for_training=False, data_shapes=[['data', (batch_size, 3, img_width, img_height)]], label_shapes=unet._label_shapes)
