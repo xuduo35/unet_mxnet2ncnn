@@ -84,7 +84,7 @@ def main():
         val_iter.reset()
         val_loss = np.mean(val_losses)
 
-        if e > 0 and val_loss < best_val_loss:
+        if val_loss < best_val_loss:
             best_val_loss = val_loss
             unet.save_checkpoint('best_unet_person_segmentation', 0)
             print("Best model at Epoch %i" %(e+1))

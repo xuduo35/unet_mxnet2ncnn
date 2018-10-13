@@ -1,1 +1,7 @@
 unet.log
+datasets
+__pycache__
+best_unet_person_segmentation-0000.params
+best_unet_person_segmentation-symbol.json
+unet_person_segmentation-0000.params
+unet_person_segmentation-symbol.json
