@@ -18,5 +18,19 @@ How to use:
 
 4. Use ncnn tool 'mxnet-ncnn' to get ncnn model
 
-5. TBD, update later
+   Need to patch tools/mxnet/mxnet2ncnn.cpp for ncnn. Set num_group to 1 in if for "Deconvolution" op. But I think it will fix also if designate it in mxnet network.
+
+5. Run ncnn-unet.
+
+   Install OpenCV first.
+
+   cd ncnn-unet
+
+   Edit CMakefiles to fit your enviroment.
+
+   mkdir build
+
+   cmake ..; make
+
+   ./unet your_jpg_file
 
