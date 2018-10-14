@@ -34,7 +34,7 @@ def get_batch(items, root_path, nClasses, height, width):
           tmp_height = label_img.shape[0]
           label_img = label_img[:,tmp_height//5:tmp_height*4//5]
         im = np.zeros((height, width, 3), dtype='uint8')
-        im[:, :, :] = 128
+        #im[:, :, :] = 128
         lim = np.zeros((height, width, 3), dtype='uint8')
 
         if img.shape[0] >= img.shape[1]:

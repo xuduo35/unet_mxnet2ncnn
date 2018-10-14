@@ -18,7 +18,7 @@ def post_process_mask(label, img_cols, img_rows, n_classes, p=0.5):
 
 def load_image(img, width, height):
     im = np.zeros((height, width, 3), dtype='uint8')
-    im[:, :, :] = 128
+    #im[:, :, :] = 128
 
     if img.shape[0] >= img.shape[1]:
         scale = img.shape[0] / height
