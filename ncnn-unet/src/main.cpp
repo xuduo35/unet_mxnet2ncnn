@@ -25,6 +25,10 @@ int main(int argc, char** argv) {
     Unet.load_param("../models/ncnn.param");
     Unet.load_model("../models/ncnn.bin");
 
+    int64 tic, toc;
+
+    tic = cv::getTickCount();
+
     cv::Scalar value = Scalar(0,0,0);
     cv::Mat src;
     cv::Mat tmp;
@@ -44,10 +48,10 @@ int main(int argc, char** argv) {
         cv::copyMakeBorder(src, tmp, 0, 0, left, right, BORDER_CONSTANT, value);
     }
 
-    top = (INPUT_HEIGHT*top)/height;
-    bottom = (INPUT_HEIGHT*bottom)/height;
-    left = (INPUT_WIDTH*left)/width;
-    right = (INPUT_WIDTH*right)/width;
+    top = (INPUT_HEIGHT*top)/width;
+    bottom = (INPUT_HEIGHT*bottom)/width;
+    left = (INPUT_WIDTH*left)/height;
+    right = (INPUT_WIDTH*right)/height;
 
     std::cout << "top " << top << " bottom " << bottom << " left " << left << " right " << right << std::endl;
 
@@ -83,7 +87,7 @@ int main(int argc, char** argv) {
     ncnn::Extractor ex = Unet.create_extractor();
 
     ex.set_light_mode(true);
-    //sex.set_num_threads(4);
+    //ex.set_num_threads(4);
 
     ex.input("data", in);
 
@@ -93,6 +97,14 @@ int main(int argc, char** argv) {
     //ex.extract("conv11_1", mask);
     ex.extract("softmax", mask);
     //ex.extract("pool5", mask);
+
+    {
+        toc = cv::getTickCount() - tic;
+
+        double time = toc / double(cv::getTickFrequency());
+        double fps = double(1.0) / time;
+        std::cout << "fps:" << fps << std::endl;
+    }
 
     std::cout << "whc " << mask.w << " " << mask.h << " " << mask.c << std::endl;
 #if 1
@@ -115,7 +127,7 @@ int main(int argc, char** argv) {
            }
            //std::cout << srcdata[k*mask.w*mask.h+i*mask.w+j] << std::endl;
          }
-         
+
          data[i*INPUT_WIDTH + j] = maxk;
 
          if ((left > 0) && (right > 0) && ((j < left) || (j >= INPUT_WIDTH - right)))
@@ -123,7 +135,6 @@ int main(int argc, char** argv) {
 
          if ((top > 0) && (bottom > 0) && ((i < top) || (i >= INPUT_HEIGHT - bottom)))
            data[i*INPUT_WIDTH + j] = 0;
-
 #else
          if (srcdata[1*mask.w*mask.h+i*mask.w+j] > 0.999)
            data[i*INPUT_WIDTH + j] = 1;
@@ -132,7 +143,15 @@ int main(int argc, char** argv) {
 #endif
        }
     }
-    
+
+    {
+        toc = cv::getTickCount() - tic;
+
+        double time = toc / double(cv::getTickFrequency());
+        double fps = double(1.0) / time;
+        std::cout << "fps:" << fps << std::endl;
+    }
+
     cv_img *= 255;
     cv::imshow("test", cv_img);
     cv::waitKey();
