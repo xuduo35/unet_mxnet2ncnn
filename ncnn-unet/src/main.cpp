@@ -29,16 +29,27 @@ int main(int argc, char** argv) {
     cv::Mat src;
     cv::Mat tmp;
     src = cv::imread(argv[1]);
+    float width = src.size().width;
+    float height = src.size().height;
+    int top = 0, bottom = 0;
+    int left = 0, right = 0;
 
-    if (src.size().width > src.size().height) {
-        int top = (src.size().width - src.size().height) / 2;
-        int bottom = (src.size().width - src.size().height) - top;
+    if (width > height) {
+        top = (width - height) / 2;
+        bottom = (width - height) - top;
         cv::copyMakeBorder(src, tmp, top, bottom, 0, 0, BORDER_CONSTANT, value);
     } else {
-        int left = (src.size().height - src.size().width) / 2;
-        int right = (src.size().height - src.size().width) - left;
+        left = (height - width) / 2;
+        right = (height - width) - left;
         cv::copyMakeBorder(src, tmp, 0, 0, left, right, BORDER_CONSTANT, value);
     }
+
+    top = (INPUT_HEIGHT*top)/height;
+    bottom = (INPUT_HEIGHT*bottom)/height;
+    left = (INPUT_WIDTH*left)/width;
+    right = (INPUT_WIDTH*right)/width;
+
+    std::cout << "top " << top << " bottom " << bottom << " left " << left << " right " << right << std::endl;
 
     cv::Mat tmp1;
     cv::resize(tmp, tmp1, cv::Size(INPUT_WIDTH, INPUT_HEIGHT), CV_INTER_CUBIC);
@@ -79,7 +90,8 @@ int main(int argc, char** argv) {
     ncnn::Mat mask;
     //ex.extract("relu5_2_splitncnn_0", mask);
     //ex.extract("trans_conv6", mask);
-    ex.extract("conv11_1", mask);
+    //ex.extract("conv11_1", mask);
+    ex.extract("softmax", mask);
     //ex.extract("pool5", mask);
 
     std::cout << "whc " << mask.w << " " << mask.h << " " << mask.c << std::endl;
@@ -93,6 +105,7 @@ int main(int argc, char** argv) {
 
     for (int i = 0; i < mask.h; i++)
        for (int j = 0; j < mask.w; j++) {
+#if 1
          float tmp = srcdata[0*mask.w*mask.h+i*mask.w+j];
          int maxk = 0;
          for (int k = 0; k < mask.c; k++) {
@@ -102,7 +115,21 @@ int main(int argc, char** argv) {
            }
            //std::cout << srcdata[k*mask.w*mask.h+i*mask.w+j] << std::endl;
          }
+         
          data[i*INPUT_WIDTH + j] = maxk;
+
+         if ((left > 0) && (right > 0) && ((j < left) || (j >= INPUT_WIDTH - right)))
+           data[i*INPUT_WIDTH + j] = 0;
+
+         if ((top > 0) && (bottom > 0) && ((i < top) || (i >= INPUT_HEIGHT - bottom)))
+           data[i*INPUT_WIDTH + j] = 0;
+
+#else
+         if (srcdata[1*mask.w*mask.h+i*mask.w+j] > 0.999)
+           data[i*INPUT_WIDTH + j] = 1;
+         else
+           data[i*INPUT_WIDTH + j] = 0;
+#endif
        }
     }
     
