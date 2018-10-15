@@ -7,10 +7,10 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 aux_source_directory(./src/ SRC_LIST)
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
-include_directories( ${CMAKE_CURRENT_LIST_DIR}/../ncnn/build/src )
-include_directories( ${CMAKE_CURRENT_LIST_DIR}/../ncnn/src )
+include_directories( ${CMAKE_CURRENT_LIST_DIR}/../../ncnn/build/src )
+include_directories( ${CMAKE_CURRENT_LIST_DIR}/../../ncnn/src )
 
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-target_link_libraries( unet ${OpenCV_LIBS} ${CMAKE_CURRENT_LIST_DIR}/../ncnn/build/src/libncnn.a)
+target_link_libraries( unet ${OpenCV_LIBS} ${CMAKE_CURRENT_LIST_DIR}/../../ncnn/build/src/libncnn.a)
